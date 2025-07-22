@@ -53,9 +53,41 @@ that already exists in the `index.html` file.
 
 As you can see, the App component is actually a function that returns some TSX code, which is very similar to HTML.  
 
-# How does it work
+# Building the layout
 
-Check the `App.tsx` file to see a basic example of a TODO list application.  
+Here's how it looks after we've implement the layout in our `App.tsx` file:
+```tsx
+export default function App() {
+  return (
+    <>
+      <form className="new-item-form">
+        <div className="form-row">
+          <label htmlFor="item">New Item</label>
+          <input type="text" id="item" />
+        </div>
+        <button className="btn">Add</button>
+      </form>
+      <h1 className="header">TODO List</h1>
+      <ul className="list">
+        <li>
+          <label>
+            <input type="checkbox" />
+            Item 1
+          </label>
+          <button className="btn btn-danger">Delete</button>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox" />
+            Item 2
+          </label>
+          <button className="btn btn-danger">Delete</button>
+        </li>
+      </ul>
+    </>
+  )
+}
+```
 
 ## Each component can only return a single element
 
@@ -84,7 +116,23 @@ export default function App() {
 
 So if we want to return multiple elements from a single component, we need to use a **fragment**.  
 
+# Make things interactive
+
+To achieve interactivity in React, we need to use something called "**state**".  
+To do that, we'll add a hook inside our App component:
+```tsx
+import { useState } from 'react'
+
+export default function App() {
+  const [items, setItems] = useState([])
+
+  return(
+    ...
+  )
+}
+```
 
 
 
-@15/42
+
+@16/42
