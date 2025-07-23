@@ -118,8 +118,8 @@ So if we want to return multiple elements from a single component, we need to us
 
 # Make things interactive
 
-To achieve interactivity in React, we need to use something called "**state**".  
-To do that, we'll add a hook inside our App component:
+To achieve interactivity in React, we need to use something called "**State Hook**".  
+To make our App component interactive, we'll add a hook inside of it:
 ```tsx
 import { useState } from 'react'
 
@@ -132,7 +132,24 @@ export default function App() {
 }
 ```
 
+There are many hooks in React, useState is one of them.  
+`useState` is a function provided by React that lets us add a "**state variable**" to our component.  
+
+Think of "state" as any data that can change over time and should cause the component to re-render when it does.  
+
+In the snippet above, we're passing an empty array to `useState` as the initial value for our state.  
+So, when the App component first loads, its `items` state will be an empty array (an empty TODO list).  
+
+Our useState function returns an array containing 2 things:
+- items: the current value of our state
+- setItems: a special function that updates the state
+
+We never modify the state variable directly. Instead we call this special function with the new value,  
+and React will take care of re-rendering our component with the updated state.  
+
+`const [...] = ...` is modern JS syntax called "Array destructuring, a clean way to pull the 2 elements out  
+of the array returned by `useState` and assign them to 2 separate constants: items and setItems.
 
 
 
-@16/42
+@18/42
