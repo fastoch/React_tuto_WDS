@@ -124,7 +124,7 @@ To make our App component interactive, we'll add a hook inside of it:
 import { useState } from 'react'
 
 export default function App() {
-  const [items, setItems] = useState([])
+  const [newItem, setNewItem] = useState("")
 
   return(
     ...
@@ -137,19 +137,47 @@ There are many hooks in React, useState is one of them.
 
 Think of "state" as any data that can change over time and should cause the component to re-render when it does.  
 
-In the snippet above, we're passing an empty array to `useState` as the initial value for our state.  
-So, when the App component first loads, its `items` state will be an empty array (an empty TODO list).  
+In the snippet above, we're passing an empty string to `useState` as the initial value for our state.  
+So, when the App component first loads, the input field will be empty.    
 
 Our useState function returns an array containing 2 things:
-- items: the current value of our state
-- setItems: a special function that updates the state
+- `newItem`: the current value of our state
+- `setNewItem`: a special function that updates the state
 
 We never modify the state variable directly. Instead we call this special function with the new value,  
 and React will take care of re-rendering our component with the updated state.  
 
-`const [...] = ...` is modern JS syntax called "Array destructuring, a clean way to pull the 2 elements out  
-of the array returned by `useState` and assign them to 2 separate constants: items and setItems.
+`const [...] = ...` is modern JS syntax called "**Array destructuring**".
+
+## Updating the user input when it changes
+
+```tsx
+export default function App() {
+  const [newItem, setNewItem] = useState("")
+
+  return (
+    <>
+      <form className="new-item-form">
+        <div className="form-row">
+          <label htmlFor="item">New Item</label>
+          <input value={newItem} onChange={e => setNewItem(e.target.value)} type="text" id="item" />
+        </div>
+        <button className="btn">Add</button>
+      </form>
+```
+
+- We set the input value to `{newItem}` to display whatever the user types inside the input field  
+- we use the `onChange` event handler to update the state every time a change occurs in the input field
+- `e.target` refers to the DOM element that triggers the event, which is the `<input>` element
+- `e.target.value` is the current text inside the input field
+
+## Adding an item to the list
+
+- we add the `onSubmit` attribute to the form and set it to `{submitHandler}`
+- we implement this `submitHandler` function right above the return statement
+- we add another state variable (todos) and a function to update it (setTodos)
 
 
 
-@18/42
+
+@22/42
