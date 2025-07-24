@@ -232,9 +232,37 @@ To do that, we need to use a `map()` function inside of our `<ul>` element:
 </ul>
 ```
 
+## Handling the checkbox state
+
+When clicking on the checkbox next to a list item, we want our app to check the box.  
+To do that, we first add an event handler like this:
+```tsx
+<input type="checkbox" checked={todo.completed} onChange={e => toggleTodo(todo.id, e.target.checked)} />
+```
+- The `onChange` attribute runs the `toggleTodo` function when the checkbox state changes
+- This function needs `todo.id` to know which checkbox should be toggled or untoggled
+- And it also needs `e.target.checked` to determine if the checkbox is currently checked or not
+
+Here's how our `toggleTodo` function looks like:
+```tsx
+function toggleTodo(id: string, completed: boolean) {
+  setTodos(currentTodos => {
+    return currentTodos.map(todo => {
+      // if the todo item is the one the user has clicked ...
+      if (todo.id === id) {
+        // ... return a copy of the todo object on which the 'completed' property has been updated
+        return { ...todo, completed } 
+      }
+      // else return the same todo object (do not change anything)
+      return todo
+    })
+  })
+}
+```
+
 ## Deleting the items
 
 
 
 
-@26/42
+@29/42

@@ -16,17 +16,37 @@ export default function App() {
     e.preventDefault() // prevents the page from refreshing, which would reset our app's state
     setTodos(currentTodos => {
       return [
-        // the spread syntax creates a copy of the array, so that React can see the change
+        // the spread syntax creates a copy of the array, sbecause React = immutability
         ...currentTodos,  
-        // then we create the new TODO item
+        // then we create a new TODO object
         {
           id: crypto.randomUUID(),  // unique identifier for the new todo item
           title: newItem,  // sets the title of the todo item to the value being held by the newItem state variable
-          completed: false  // tracks the status of the todo item. When a new todo is created, it's not completed yet
+          completed: false  // When a new todo is created, it's not completed yet (the checkbox is unchecked)
         }
       ]  
     }) 
     setNewItem("") // clears the input field after a new item is added
+  }
+
+  function toggleTodo(id: string, completed: boolean) {
+    setTodos(currentTodos => {
+      return currentTodos.map(todo => {
+        // if the todo item is the one the user has clicked ...
+        if (todo.id === id) {
+          // ... return a copy of the todo object on which the 'completed' property has been updated
+          return { ...todo, completed } 
+        }
+        // else return the same todo object (do not change anything)
+        return todo
+      })
+    })
+  }
+
+  function deleteTodo(id: string) {
+    setTodos(currentTodos => {
+      return currentTodos.filter(todo => todo.id !== id)
+    })
   }
 
   return (
@@ -44,10 +64,10 @@ export default function App() {
           return (
             <li key={todo.id}>  {/* React needs to know which item we're talking about */}
               <label>
-                <input type="checkbox" checked={todo.completed} />
+                <input type="checkbox" checked={todo.completed} onChange={e => toggleTodo(todo.id, e.target.checked)} />
                 {todo.title}
               </label>
-              <button className="btn btn-danger">Delete</button>
+              <button className="btn btn-danger" onClick={() => deleteTodo(todo.id)} >Delete</button>
             </li>
           )
         })}
