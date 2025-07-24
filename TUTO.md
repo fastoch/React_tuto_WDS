@@ -174,10 +174,67 @@ export default function App() {
 ## Adding an item to the list
 
 - we add the `onSubmit` attribute to the form and set it to `{submitHandler}`
-- we implement this `submitHandler` function right above the return statement
-- we add another state variable (todos) and a function to update it (setTodos)
+```tsx
+<form onSubmit={handleSubmit} className="new-item-form">
+```
+- we implement the `submitHandler` function right above the return statement
+```tsx
+function handleSubmit(e: React.FormEvent) {
+  e.preventDefault() // prevents the page from refreshing, which would reset our app's state
+  setTodos(currentTodos => {
+    return [
+      // the spread syntax creates a copy of the array, so that React can see the change
+      ...currentTodos,  
+      // then we create the new TODO item
+      {
+        id: crypto.randomUUID(),  // unique identifier for the new todo item
+        title: newItem,  // sets the title of the todo item to the value being held by the newItem state variable
+        completed: false  // tracks the status of the todo item. When a new todo is created, it's not completed yet
+      }
+    ]  
+  }) 
+  setNewItem("") // clears the input field after a new item is added
+}
+```
+
+- we define a custom type, then we add another state variable (todos) and a function to update it (setTodos)
+```tsx
+type Todo = {
+  id: string,
+  title: string,
+  completed: boolean
+}
+
+export default function App() {
+  const [newItem, setNewItem] = useState("")
+  const [todos, setTodos] = useState<Todo[]>([])  
+```
+
+## Rendering the todos items dynamically
+
+For now, our list is still displaying hardcoded items.  
+Instead, we want to render them from our `todos` state dynamically.  
+
+To do that, we need to use a `map()` function inside of our `<ul>` element:
+```tsx
+<ul className="list">
+  {todos.map(todo => {
+    return (
+      <li key={todo.id}>
+        <label>
+          <input type="checkbox" checked={todo.completed} />
+          {todo.title}
+        </label>
+        <button className="btn btn-danger">Delete</button>
+      </li>
+    )
+  })}
+</ul>
+```
+
+## Deleting the items
 
 
 
 
-@22/42
+@26/42

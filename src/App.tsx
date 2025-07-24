@@ -1,14 +1,32 @@
 import "./styles.css"
 import { useState } from "react"
 
+// telling TypeScript what kind of items the todos array will hold
+type Todo = {
+  id: string,
+  title: string,
+  completed: boolean
+}
+
 export default function App() {
   const [newItem, setNewItem] = useState("")
-  const [todos, setTodos] = useState([])
-
+  const [todos, setTodos] = useState<Todo[]>([])  
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault() // prevents the page from refreshing, which would reset our app's state
-    setTodos([...todos, { id: crypto.randomUUID(), title: newItem, completed: false }]) // the spread syntax creates a copy of the todos array 
+    setTodos(currentTodos => {
+      return [
+        // the spread syntax creates a copy of the array, so that React can see the change
+        ...currentTodos,  
+        // then we create the new TODO item
+        {
+          id: crypto.randomUUID(),  // unique identifier for the new todo item
+          title: newItem,  // sets the title of the todo item to the value being held by the newItem state variable
+          completed: false  // tracks the status of the todo item. When a new todo is created, it's not completed yet
+        }
+      ]  
+    }) 
+    setNewItem("") // clears the input field after a new item is added
   }
 
   return (
@@ -22,20 +40,17 @@ export default function App() {
       </form>
       <h1 className="header">TODO List</h1>
       <ul className="list">
-        <li>
-          <label>
-            <input type="checkbox" />
-            Item 1
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
-        <li>
-          <label>
-            <input type="checkbox" />
-            Item 2
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
+        {todos.map(todo => {
+          return (
+            <li key={todo.id}>  {/* React needs to know which item we're talking about */}
+              <label>
+                <input type="checkbox" checked={todo.completed} />
+                {todo.title}
+              </label>
+              <button className="btn btn-danger">Delete</button>
+            </li>
+          )
+        })}
       </ul>
     </>
   )
