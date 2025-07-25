@@ -454,6 +454,9 @@ We actually have to move the `key` prop from our `<li>` element to the `TodoItem
 <TodoItem id={todo.id} title={todo.title} completed={todo.completed} key={todo.id} />
 ```
 
+In fact, we can replace our component's props `id={todo.id} title={todo.title} completed={todo.completed}` with `{...todo}`   
+That is called the **"spread syntax for props"**, and it's a powerful and widely-used feature in React.  
+
 ### Important note
 
 The `id` prop is for our component's logic, while the `key` prop is a special instruction for React itself.  
