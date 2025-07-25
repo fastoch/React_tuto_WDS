@@ -262,7 +262,35 @@ function toggleTodo(id: string, completed: boolean) {
 
 ## Deleting the items
 
+This time, we'll use the `onClick` attribute on the Delete button:
+```tsx
+<button className="btn btn-danger" onClick={() => deleteTodo(todo.id)}>Delete</button>
+```
+
+And here's how our `deleteTodo` function looks like:
+```tsx
+function deleteTodo(id: string) {
+  setTodos(currentTodos => {
+    return currentTodos.filter(todo => todo.id !== id)
+  })
+}
+```
+This renders all the todos except for the one that matches the provided id.  
+
+### Important note
+
+We want to **reference** the `deleteTodo` function, but since we need to pass it the `todo.id` argument,  
+we need to use an anonymous function.  
+
+We want the `deleteTodo` function to only be called when the button is clicked.  
+Without the anonymous function, it would be called immediately, each time the page is loaded.  
+
+Every time a function is followed by parameters (parentheses), it will be called immediately.  
+To reference a function (so it doesn't get called immediately), we need to either: 
+- omit the parentheses when we don't need to pass any parameters 
+- or use an anonymous function when we have to use parameters
 
 
 
-@29/42
+
+@30/42
