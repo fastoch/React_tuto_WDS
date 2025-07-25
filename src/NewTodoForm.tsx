@@ -4,7 +4,7 @@ type NewTodoFormProps = {
   addTodo: (title: string) => void
 }
 
-export function NewTodoForm({addTodo}: NewTodoFormProps) {
+export function NewTodoForm({ addTodo }: NewTodoFormProps) {
   const [newItem, setNewItem] = useState("")
 
   function handleSubmit(e: React.FormEvent) {

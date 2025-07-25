@@ -313,7 +313,7 @@ In our case, we can use the following to display a specific message when there's
 Let's break our code into different components (files):
 - one component for the form = `NewTodoForm.tsx`
 - another component for the list = `TodoList.tsx`
-- another one for the individual items = `TodoItem.tsx`
+- and a last one for the individual items = `TodoItem.tsx`
 
 Then, we can import these components into our `App.tsx` file:
 ```tsx
@@ -406,11 +406,11 @@ And we need it to pass `addTodo` down to `NewTodoForm.tsx`.
 
 Then, in the NewTodoForm component, we need to use this prop:
 ```tsx
-type props = {
+type NewTodoFormProps = {
   addTodo: (title: string) => void
 }
 
-export function NewTodoForm({addTodo}: props) {
+export function NewTodoForm({ addTodo }: NewTodoFormProps) {
   const [newItem, setNewItem] = useState("")
 
   function handleSubmit(e: React.FormEvent) {
@@ -429,12 +429,54 @@ And inside of it we create a function `TodoList()` in which we put the `<ul>...<
 
 And instead of the `<ul>` element inside of App.tsx, we add the `<TodoList />` component.  
 
-Now, we need to pass all the props that this component needs.
+Now, we need to pass all the props that this component needs:
+- in the TodoList component:
+```tsx
+export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
+  ...
+}
+```
+- in the App component:
+```tsx
+<TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+```
+
 
 
 ## TodoItem component
 
+Instead of returning an `<li>` element, the TodoList will return a `<TodoItem />` component.  
+This component takes all of the props of our todo: `<TodoItem id={todo.id} title={todo.title} completed={todo.completed} />`  
+
+We actually have to move the `key` prop from our `<li>` element to the `TodoItem` component:  
+- check line 223 of this file to know which prop I'm talking about.
+```tsx
+<TodoItem id={todo.id} title={todo.title} completed={todo.completed} key={todo.id} />
+```
+
+### Important note
+
+The `id` prop is for our component's logic, while the `key` prop is a special instruction for React itself.  
+
+When rendering a list of elements from an array (like our `todos.map()`), React needs a way to uniquely identify  
+each item in that list. This is crucial for performance.  
+
+Without the `key` prop, React might have to re-render the entire list, which is inefficient.  
+
+With the `key` prop, React can quickly identify which items are new, which were removed, and which just moved.  
+It can then update the DOM precisely and efficiently, only changing what's necessary.  
+
+This `key` prop is used internally by React and is not passed down to our component.  
+We cannot access `props.key` inside the `TodoItem` component.  
+
+The `id` prop, on the other hand, is a regular prop that we have defined ourselves.  
+We pass it to our `TodoItem` component just like `title` and `completed`.  
+Our component receives this prop and can use it in its own logic: when calling `deleteTodo()` or `toggleTodo()`.
+
+In short: 
+- the `key` prop is to uniquely identify elements in a list for efficcient DOM updates (used by React)
+- the `id` prop is to pass the todo's unique identifier for the component's own logic
 
 
 
-@35/42
+@37/42
