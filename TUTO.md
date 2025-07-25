@@ -432,6 +432,12 @@ And instead of the `<ul>` element inside of App.tsx, we add the `<TodoList />` c
 Now, we need to pass all the props that this component needs:
 - in the TodoList component:
 ```tsx
+type TodoListProps = {
+  todos: Todo[],
+  toggleTodo: (id: string, completed: boolean) => void,
+  deleteTodo: (id: string) => void
+}
+
 export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
   ...
 }
@@ -440,8 +446,6 @@ export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
 ```tsx
 <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
 ```
-
-
 
 ## TodoItem component
 
@@ -457,7 +461,7 @@ We actually have to move the `key` prop from our `<li>` element to the `TodoItem
 In fact, we can replace our component's props `id={todo.id} title={todo.title} completed={todo.completed}` with `{...todo}`   
 That is called the **"spread syntax for props"**, and it's a powerful and widely-used feature in React.  
 
-### Important note
+### id prop vs key prop
 
 The `id` prop is for our component's logic, while the `key` prop is a special instruction for React itself.  
 
@@ -480,6 +484,33 @@ In short:
 - the `key` prop is to uniquely identify elements in a list for efficcient DOM updates (used by React)
 - the `id` prop is to pass the todo's unique identifier for the component's own logic
 
+# Make the data persist inside the local storage 
+
+We've seen how to use `useState`.
+To persist data inside the local storage, we need to use another React hook called `useEffect`.  
+
+`useState` returns 2 things: a stateful value, and a function to udpate it.  
+`useEffect` doesn't return anything, but it takes a function as its argument.  
+
+Here's the corresponding code (inside App.tsx):
+```tsx
+export default function App() {
+  const [todos, setTodos] = useState<Todo[]>([]) 
+  
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todos))
+  }, [todos])
+```
+
+Every single time that a change occurs inside of the todos array, we want to run the code inside of useEffect.  
+And this code just takes our todos and stores them inside the local storage.  
+
+To retrieve our information from local storage, we're going to call useState, but instead of passing  
+it a default value, we're going to pass it a function.  
 
 
-@37/42
+
+The function version of useState works exactly the same, whatever this function returns will be the default value.
+
+
+@39/42
