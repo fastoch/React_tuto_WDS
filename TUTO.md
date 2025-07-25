@@ -290,7 +290,151 @@ To reference a function (so it doesn't get called immediately), we need to eithe
 - omit the parentheses when we don't need to pass any parameters 
 - or use an anonymous function when we have to use parameters
 
+## What if we have no todos in our list?
+
+### A word about short circuiting
+
+**Short circuiting** in React refers to using JavaScript's logical operators (&& and ||) for concise conditional rendering of UI elements. This approach leverages the fact that in JavaScript, logical expressions evaluate from left to right and return as soon 
+as the outcome is determined, thus "short-circuiting" the remaining expressions.  
+
+In our case, we can use the following to display a specific message when there's no todos:
+```tsx
+<ul className="list">
+  {todos.length === 0 && "No Todos yet"} {/* message displayed when there are no todos */}
+  {todos.map(todo => {                   {/* message not displayed when there are todos */}
+    return (
+      ...
+    )
+  })}
+```
+
+# There's room for improvement
+
+Let's break our code into different components (files):
+- one component for the form = `NewTodoForm.tsx`
+- another component for the list = `TodoList.tsx`
+- another one for the individual items = `TodoItem.tsx`
+
+Then, we can import these components into our `App.tsx` file:
+```tsx
+import NewTodoForm from "./components/NewTodoForm"
+import TodoList from "./components/TodoList"
+```
+
+And add them to the `return` statement of our App component:
+```tsx
+export default function App() {
+  return (
+    <>
+      <NewTodoForm />
+      <TodoList />
+    </>
+  )
+}
+```
+
+But it's actually a bit more complicated than that. Let's see how this is done...
+
+## NewTodoForm component
+
+Notice that, in `NewTodoForm.tsx`, we have removed the following code from our `handleSubmit` function:
+```tsx
+setTodos(currentTodos => {
+  return [
+    // the spread syntax creates a copy of the array, sbecause React = immutability
+    ...currentTodos,  
+    // then we create a new TODO object
+    {
+      id: crypto.randomUUID(),  // unique identifier for the new todo item
+      title: newItem,  // sets the title of the todo item to the value being held by the newItem state variable
+      completed: false  // When a new todo is created, it's not completed yet (the checkbox is unchecked)
+    }
+  ]  
+})
+```
+
+This `setTodos` needs to live inside of our `App` because this is where our todos state lives:  
+`const [todos, setTodos] = useState<Todo[]>([])`  
+
+And we can't move our todos state into `NewTodoForm` because it's also needed for our todo `<ul>` list.  
+
+The solution is to create a simple function `addTodo()` in the App component, and then paste the above `setTodos` code.  
+```tsx
+function addTodo(title: string) {
+  setTodos(currentTodos => {
+    return [
+      ...currentTodos,  
+      {
+        id: crypto.randomUUID(),  
+        title,  
+        completed: false  
+      }
+    ]  
+  }) 
+}
+```
+
+Now we need to pass that function down to our `NewTodoForm`:
+```tsx
+export function NewTodoForm() {
+  const [newItem, setNewItem] = useState("")
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault() // prevents the page from refreshing, which would reset our app's state
+    if (newItem === "") return  // so we cannot add an empty item
+    addTodo(newItem)
+    setNewItem("") // clears the input field after a new item is added
+  }
+```
+Notice the `newItem` is now passed into the `addTodo()` function instead of the `setTodos()`.  
+
+But how can we use `addTodo` inside `NewTodoForm.tsx` since it's declared in `App.tsx`?  
+This is where the concept of **props** comes in...
+
+### Props (very important)
+
+Props allow us to pass information down to child components.  
+The same way we add attributes to HTML elements, we can add attributes to React components.  
+
+In our App component, we can add the addTodo function as a prop to the NewTodoForm component:
+```tsx
+<NewTodoForm addTodo={addTodo} />
+```
+
+In our case, `App.tsx` is the parent component.  
+And we need it to pass `addTodo` down to `NewTodoForm.tsx`.  
+
+Then, in the NewTodoForm component, we need to use this prop:
+```tsx
+type props = {
+  addTodo: (title: string) => void
+}
+
+export function NewTodoForm({addTodo}: props) {
+  const [newItem, setNewItem] = useState("")
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault() // prevents the page from refreshing, which would reset our app's state
+    if (newItem === "") return  // so we cannot add an empty item
+    addTodo(newItem)
+    setNewItem("") // clears the input field after a new item is added
+  }
+```
+Since we're using TypeScript, we first need to type the props. 
+
+## TodoList component
+
+The same way we have pasted our form inside the NewTodoForm component, we create a new component = `TodoList.tsx`  
+And inside of it we create a function `TodoList()` in which we put the `<ul>...</ul>` code from `App.tsx`  
+
+And instead of the `<ul>` element inside of App.tsx, we add the `<TodoList />` component.  
+
+Now, we need to pass all the props that this component needs.
+
+
+## TodoItem component
 
 
 
-@30/42
+
+@35/42
