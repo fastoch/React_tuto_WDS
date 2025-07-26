@@ -490,9 +490,13 @@ We've seen how to use `useState`.
 To persist data inside the local storage, we need to use another React hook called `useEffect`.  
 
 `useState` returns 2 things: a stateful value, and a function to udpate it.  
-`useEffect` doesn't return anything, but it takes a function as its argument.  
 
-Here's the corresponding code (inside App.tsx):
+`useEffect` doesn't return anything, but it takes a function as its argument.  
+This function takes 2 parameters: 
+- what should be done (saving our todos to local storage)
+- the array that it needs to watch for any change (`[todos]`)
+
+Here's the corresponding code (inside of App.tsx):
 ```tsx
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]) 
@@ -503,14 +507,59 @@ export default function App() {
 ```
 
 Every single time that a change occurs inside of the todos array, we want to run the code inside of useEffect.  
-And this code just takes our todos and stores them inside the local storage.  
+This code will take our todos and store them inside the local storage.  
 
-To retrieve our information from local storage, we're going to call useState, but instead of passing  
+# Retrieving information from local storage
+
+To get our information from local storage, we're going to call the existing useState, but instead of passing  
 it a default value, we're going to pass it a function.  
+```tsx
+export default function App() {
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const localValue = localStorage.getItem("ITEMS")
+    if (localValue == null) return []  // true if localValue is either null or undefined
+    return JSON.parse(localValue)  // else return the previously saved todos 
+  }) 
+```
 
+The function version of useState works exactly the same: whatever this function returns will be the default value.  
 
+Now, when we reload the page, we don't lose our todos.  
+And this is thanks to the combination of useEffect and useState.  
 
-The function version of useState works exactly the same, whatever this function returns will be the default value.
+# About local storage
 
+Data stored in localStorage does not have a built-in expiration date and persists even after the browser is closed 
+or the computer is restarted. You only lose this data if:
+- You (or your code) specifically delete it.
+- The user clears their browser data/cache, including "cookies and other site data."
+- The browser runs out of space and evicts old data.
+- In private/incognito mode, data may be cleared when all private windows are closed
 
-@39/42
+# Important note about Hooks
+
+React hooks need to be called **at the top** of our function (functional component).  
+```tsx
+export default function App() {
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const localValue = localStorage.getItem("ITEMS")
+    if (localValue == null) return []  // true if localValue is either null or undefined
+    return JSON.parse(localValue)  // else return the previously saved todos 
+  }) 
+  
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todos))
+  }, [todos])
+```
+
+We cannot include a hook in a conditional statement, nor inside a loop.  
+We cannot put hooks after returns.
+
+# React components structure
+
+React components almost always follow a similar structure:
+- we have some hooks at the very top
+- then some helper functions, or maybe some code that's doing some parsing of data
+- and finally we have your return statement which has all of our .jsx/.tsx code
+
+Check the `App.tsx` file and you'll notice such structure.

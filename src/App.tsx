@@ -8,6 +8,8 @@ import { TodoList } from "./TodoList"
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>(() => {
     const localValue = localStorage.getItem("ITEMS")
+    if (localValue == null) return []  // true if localValue is either null or undefined
+    return JSON.parse(localValue)  // else return the previously saved todos 
   }) 
   
   useEffect(() => {
